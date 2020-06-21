@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather App</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" type="text/css" href="assets/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Weather Dashboard</h1>
+    </header>
+    <div class="row">
+      <container id="sideBar" class="col-md-3">
+        <div class="jumbotron">
+          <h1 class="display-4">Search for a City</h1>
+          <input id="input" type="text" placeholder="Search by City Name" />
+          <button id="search" type="btn">Search</button>
+        </div>
+      </container>
+      <container id="mainContent" class="col-md-8">
+        <div class="jumbotron">
+          <h1 class="display-4" id="main-Display"></h1>
+          <hr class="my-4" />
+          <p id="temp">Temperature:</p>
+          <p id="humidity">Humidity:</p>
+          <p id="wind">Wind Speed:</p>
+          <p id="uv">UV Index:</p>
+        </div>
+        <div>
+          <row>
+            <div id="futureDisplay"></div>
+          </row>
+        </div>
+      </container>
+    </div>
+  </body>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    $("#search").on("click", function () {
+      let city = $("#input").val();
+      let queryURL =
+        "https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/forecast?q=" +
+        city +
+        "&appid=fb810e62391ece993a9e59026583a3b3";
+
+      $.ajax({
+        url: queryURL,
+        method: "GET",
+      }).then(function (response) {
+        console.log(response);
+        let currentDate = response.list[0].dt_txt;
+        $("#main-Display").append(currentDate, " ", response.city.name);
+
+        let temperature = ((response.list[0].main.temp - 273) * 9) / 5 + 32;
+
+        $("#temp").append(" " + temperature.toFixed(2) + " F");
+
+        let humidity = response.list[0].main.humidity;
+        $("#humidity").append(" " + humidity + "%");
+
+        let wind = response.list[0].wind.speed;
+        $("#wind").append(" " + wind + " MPH");
+
+        for (i = 1; i < 6; i++) {
+          const future = $("<div>").addClass("card");
+          future.addClass("col-md-2");
+          const date = $("<p>");
+          date.text(response.list[i * 8].dt_txt);
+          const temp = $("<p>");
+          temp.text(
+            "Temperature: " +
+              (((response.list[i + 8].main.temp - 273) * 9) / 5 + 32).toFixed(
+                2
+              ) +
+              " F"
+          );
+          const hum = $("<p>");
+          hum.text("Humidity: " + response.list[i + 8].main.humidity + "%");
+          const icon = $("<img>");
+          icon.attr("url", response.list[i + 8].weather.icon);
+          $(future).append(date, temp, hum, icon);
+          $("#futureDisplay").append(future);
+        }
+      });
+    });
+  </script>
+</html>
