@@ -35,7 +35,62 @@
         </div>
         <div>
           <row>
-            <div id="futureDisplay"></div>
+            <div id="futureDisplay">
+              <div class="container">
+                <div class="row row-cols-5">
+                  <div class="col">
+                    <div class="card" id="card1">
+                      <div class="card-body">
+                        <p id="date1"></p>
+                        <p id="hum1"></p>
+                        <p id="temp1"></p>
+                      </div>
+                      <img url="" id="img1" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card" id="card2">
+                      <div class="card-body">
+                        <p id="date2"></p>
+                        <p id="hum2"></p>
+                        <p id="temp2"></p>
+                      </div>
+                      <img url="" id="img2" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card" id="card3">
+                      <div class="card-body">
+                        <p id="date3"></p>
+                        <p id="hum3"></p>
+                        <p id="temp3"></p>
+                      </div>
+                      <img url="" id="img3" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card" id="card4">
+                      <div class="card-body">
+                        <p id="date4"></p>
+                        <p id="hum4"></p>
+                        <p id="temp4"></p>
+                      </div>
+                      <img src="" id="img4" />
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="card" id="card5">
+                      <div class="card-body">
+                        <p id="date5"></p>
+                        <p id="hum5"></p>
+                        <p id="temp5"></p>
+                      </div>
+                      <img url="" id="img5" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </row>
         </div>
       </container>
@@ -55,38 +110,55 @@
         method: "GET",
       }).then(function (response) {
         console.log(response);
-        let currentDate = response.list[0].dt_txt;
-        $("#main-Display").append(currentDate, " ", response.city.name);
+        // let savedCity = city;
+        // localStorage.setItem("savedCity", savedCity);
+        // const savedCityButton = $("button");
+        // savedCityButton.html(savedCity);
+        // savedCityButton.on("click", displayWeather());
+        // $("#sideBar").append(savedCityButton);
 
-        let temperature = ((response.list[0].main.temp - 273) * 9) / 5 + 32;
+        displayWeather();
 
-        $("#temp").append(" " + temperature.toFixed(2) + " F");
+        function displayWeather() {
+          $("#main-Display").empty();
+          let currentDate = response.list[0].dt_txt;
+          $("#main-Display").append(currentDate, " ", response.city.name);
 
-        let humidity = response.list[0].main.humidity;
-        $("#humidity").append(" " + humidity + "%");
+          let temperature = ((response.list[0].main.temp - 273) * 9) / 5 + 32;
 
-        let wind = response.list[0].wind.speed;
-        $("#wind").append(" " + wind + " MPH");
+          $("#temp").append(" " + temperature.toFixed(2) + " F");
 
-        for (i = 1; i < 6; i++) {
-          const future = $("<div>").addClass("card");
-          future.addClass("col-md-2");
-          const date = $("<p>");
-          date.text(response.list[i * 8].dt_txt);
-          const temp = $("<p>");
-          temp.text(
-            "Temperature: " +
-              (((response.list[i + 8].main.temp - 273) * 9) / 5 + 32).toFixed(
-                2
-              ) +
-              " F"
-          );
-          const hum = $("<p>");
-          hum.text("Humidity: " + response.list[i + 8].main.humidity + "%");
-          const icon = $("<img>");
-          icon.attr("url", response.list[i + 8].weather.icon);
-          $(future).append(date, temp, hum, icon);
-          $("#futureDisplay").append(future);
+          let humidity = response.list[0].main.humidity;
+          $("#humidity").append(" " + humidity + "%");
+
+          let wind = response.list[0].wind.speed;
+          $("#wind").append(" " + wind + " MPH");
+
+          for (i = 1; i < 6; i++) {
+            $("#date" + i).empty();
+            $("#temp" + i).empty();
+            $("#hum" + i).empty();
+
+            $("#date" + i).append(response.list[i * 7].dt_txt);
+            $("#temp" + i).append(
+              "Temperature: " +
+                (((response.list[i + 7].main.temp - 273) * 9) / 5 + 32).toFixed(
+                  2
+                ) +
+                " F"
+            );
+
+            $("#hum" + i).append(
+              "Humidity: " + response.list[i + 7].main.humidity + "%"
+            );
+
+            $("#img" + i).attr(
+              "src",
+              "http://www.openweathermap.org/img/wn/" +
+                response.list[i + 7].weather[0].icon +
+                "@2x.png"
+            );
+          }
         }
       });
     });
