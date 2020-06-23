@@ -17,8 +17,8 @@
       <h1>Weather Dashboard</h1>
     </header>
     <div class="row">
-      <container id="sideBar" class="col-md-3">
-        <div class="jumbotron">
+      <container class="col-md-3">
+        <div class="jumbotron" id="sideBar">
           <h1 class="display-4">Search for a City</h1>
           <input id="input" type="text" placeholder="Search by City Name" />
           <button id="search" type="btn">Search</button>
@@ -98,47 +98,64 @@
   </body>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script type="text/javascript">
+    //creating an onclick event for the search button
     $("#search").on("click", function () {
       let city = $("#input").val();
       let queryURL =
         "https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/forecast?q=" +
         city +
         "&appid=fb810e62391ece993a9e59026583a3b3";
-
+      //references the api for the city that's been called
       $.ajax({
         url: queryURL,
         method: "GET",
       }).then(function (response) {
         console.log(response);
-        // let savedCity = city;
-        // localStorage.setItem("savedCity", savedCity);
-        // const savedCityButton = $("button");
-        // savedCityButton.html(savedCity);
-        // savedCityButton.on("click", displayWeather());
-        // $("#sideBar").append(savedCityButton);
+        //Creates a saved item for each city searched for
+        let savedCity = city;
+        localStorage.setItem("savedCity", savedCity);
+        //creates a button to return to previously searched cities
+        const savedCityButton = $("<button>");
+        savedCityButton.html(savedCity);
+        savedCityButton.addClass("savedCityBtn col-md-12");
+        //when the button is clicked on, it calls the displayWeather function
+        savedCityButton.on("click", displayWeather());
+        //appends the button to the side bar
+        $("#sideBar").append(savedCityButton);
 
+        //on click, it runs the function displayWeather
         displayWeather();
 
         function displayWeather() {
+          //on running the function, first it clears out any content already there
           $("#main-Display").empty();
+          $("#temp").empty();
+          $("#humidity").empty();
+          $("#wind").empty();
+
           let currentDate = response.list[0].dt_txt;
           $("#main-Display").append(currentDate, " ", response.city.name);
 
+          //pulls the current date, temp, humidity, and wind speed and displays them in the main jumbotron
+
           let temperature = ((response.list[0].main.temp - 273) * 9) / 5 + 32;
 
-          $("#temp").append(" " + temperature.toFixed(2) + " F");
+          $("#temp").append("Temperature: " + temperature.toFixed(2) + " F");
 
           let humidity = response.list[0].main.humidity;
-          $("#humidity").append(" " + humidity + "%");
+          $("#humidity").append("Humidity: " + humidity + "%");
 
           let wind = response.list[0].wind.speed;
-          $("#wind").append(" " + wind + " MPH");
+          $("#wind").append("Wind Speed: " + wind + " MPH");
 
+          //this for loop will create the contents of the cards for the next five days' weather
           for (i = 1; i < 6; i++) {
+            //first it will empty any old contents
             $("#date" + i).empty();
             $("#temp" + i).empty();
             $("#hum" + i).empty();
 
+            //the next steps are obtaining the statistics for the upcoming five days
             $("#date" + i).append(response.list[i * 7].dt_txt);
             $("#temp" + i).append(
               "Temperature: " +
