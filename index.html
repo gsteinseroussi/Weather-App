@@ -101,51 +101,36 @@
     let savedCities = {};
 
     function onLoad() {
-      let savedCities = JSON.parse(localStorage.getItem("savedCities"));
+      savedCities = JSON.parse(localStorage.getItem("savedCities"));
 
-      if (Object.keys(savedCities).length > 0) {
+      if (Object.keys(savedCities).length !== null) {
         console.log("hello");
         for (let i = 0; i < Object.keys(savedCities).length; i++) {
           console.log("hi");
           const savedCityButton = $("<button>");
           savedCityButton.html(savedCities[i + 1]);
           savedCityButton.addClass("savedCityBtn col-md-12");
-          // savedCityButton.on("click", displayWeather());
-          //appends the button to the side bar
+
           $("#sideBar").append(savedCityButton);
+          $(document).on("click", ".savedCityBtn", function () {
+            let city = this.textContent;
+            console.log(city);
+            getWeather(city);
+          });
         }
       }
     }
-    //creating an onclick event for the search button
-    $("#search").on("click", function () {
-      let city = $("#input").val();
+
+    function getWeather(city) {
       let queryURL =
         "https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/forecast?q=" +
         city +
         "&appid=fb810e62391ece993a9e59026583a3b3";
-
-      //references the api for the city that's been called
       $.ajax({
         url: queryURL,
         method: "GET",
       }).then(function (response) {
         console.log(response);
-        //Creates a saved item for each city searched for
-
-        let newKey = Object.keys(savedCities).length + 1;
-        console.log(newKey);
-        savedCities[newKey] = city;
-        console.log(savedCities);
-        localStorage.setItem("savedCities", JSON.stringify(savedCities));
-
-        //creates a button to return to previously searched cities
-        const savedCityButton = $("<button>");
-        savedCityButton.html(city);
-        savedCityButton.addClass("savedCityBtn col-md-12");
-        //when the button is clicked on, it calls the displayWeather function
-        savedCityButton.on("click", displayWeather());
-        //appends the button to the side bar
-        $("#sideBar").append(savedCityButton);
 
         //on click, it runs the function displayWeather
         displayWeather();
@@ -202,7 +187,31 @@
           }
         }
       });
+    }
+    //creating an onclick event for the search button
+    $("#search").on("click", function () {
+      let city = $("#input").val();
+      let newKey = Object.keys(savedCities).length + 1;
+      console.log(newKey);
+      savedCities[newKey] = city;
+      console.log(savedCities);
+      localStorage.setItem("savedCities", JSON.stringify(savedCities));
+      const savedCityButton = $("<button>");
+      savedCityButton.html(city);
+      savedCityButton.addClass("savedCityBtn col-md-12");
+
+      $("#sideBar").append(savedCityButton);
+      $(document).on("click", ".savedCityBtn", function () {
+        let city = this.textContent;
+        console.log(city);
+        getWeather(city);
+      });
+      getWeather(city);
     });
-    onLoad();
+    //references the api for the city that's been called
+
+    if (JSON.parse(localStorage.getItem("savedCities")) !== null) {
+      onLoad();
+    }
   </script>
 </html>
