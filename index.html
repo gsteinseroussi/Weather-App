@@ -123,7 +123,7 @@
 
     function getWeather(city) {
       let queryURL =
-        "https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/forecast?q=" +
+        "https://cors-anywhere.herokuapp.com/https://api.openweathermap.org/data/2.5/forecast?q=" +
         city +
         "&appid=fb810e62391ece993a9e59026583a3b3";
       $.ajax({
@@ -134,7 +134,8 @@
 
         //on click, it runs the function displayWeather
         displayWeather();
-
+        let long;
+        let lat;
         function displayWeather() {
           //on running the function, first it clears out any content already there
           $("#main-Display").empty();
@@ -156,6 +157,10 @@
 
           let wind = response.list[0].wind.speed;
           $("#wind").append("Wind Speed: " + wind + " MPH");
+          
+          long = response.city.coord.lon;
+          lat = response.city.coord.lat;
+          getUVI();
 
           //this for loop will create the contents of the cards for the next five days' weather
           for (i = 1; i < 6; i++) {
@@ -187,6 +192,15 @@
           }
         }
       });
+    }
+    function getUVI (){
+    let UVIqueryURL = "https://api.openweathermap.org/data/2.5/onecall?lat" + lat + "&lon=" + long + "&appid=fb810e62391ece993a9e59026583a3b3"
+      $.ajax({
+        url: UVIqueryURL,
+        method: "GET",
+      }).then(function (response) {
+        console.log(response);
+      })
     }
     //creating an onclick event for the search button
     $("#search").on("click", function () {
