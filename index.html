@@ -150,8 +150,6 @@
           $("#humidity").empty();
           $("#wind").empty();
 
-          getUVI();
-
           let currentDate = response.list[0].dt_txt;
           $("#main-Display").append(currentDate, " ", response.city.name);
 
@@ -166,7 +164,7 @@
 
           let wind = response.list[0].wind.speed;
           $("#wind").append("Wind Speed: " + wind + " MPH");
-
+          getUVI();
           //this for loop will create the contents of the cards for the next five days' weather
           for (i = 1; i < 6; i++) {
             //first it will empty any old contents
@@ -202,17 +200,19 @@
     function getUVI() {
       console.log(lat, long);
       let UVIQueryURL =
-        "http://api.openweathermap.org/data/2.5/onecall?lat=" +
+        "https://api.openweathermap.org/data/2.5/onecall?lat=" +
         lat +
         "&lon=" +
         long +
         "&appid=fb810e62391ece993a9e59026583a3b3";
       console.log(UVIQueryURL);
       $.ajax({
-        URL: UVIQueryURL,
+        url: UVIQueryURL,
         method: "GET",
       }).then(function (response) {
+        $("#uv").empty();
         console.log(response, "UVI API");
+        $("#uv").append("UV Index: " + response.current.uvi);
       });
     }
     //creating an onclick event for the search button
