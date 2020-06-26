@@ -20,8 +20,13 @@
       <container class="col-md-3">
         <div class="jumbotron" id="sideBar">
           <h1 class="display-4">Search for a City</h1>
-          <input id="input" type="text" placeholder="Search by City Name" />
-          <button id="search" type="btn">Search</button>
+          <input
+            id="input"
+            type="text"
+            class="col-md-6"
+            placeholder="Search by City Name"
+          />
+          <button id="search" type="btn" class="col-md-4">Search</button>
         </div>
       </container>
       <container id="mainContent" class="col-md-8">
@@ -120,7 +125,8 @@
         }
       }
     }
-
+    let lat;
+    let long;
     function getWeather(city) {
       let queryURL =
         "https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/forecast?q=" +
@@ -131,6 +137,8 @@
         method: "GET",
       }).then(function (response) {
         console.log(response);
+        lat = response.city.coord.lat;
+        long = response.city.coord.lon;
 
         //on click, it runs the function displayWeather
         displayWeather();
@@ -141,6 +149,8 @@
           $("#temp").empty();
           $("#humidity").empty();
           $("#wind").empty();
+
+          getUVI();
 
           let currentDate = response.list[0].dt_txt;
           $("#main-Display").append(currentDate, " ", response.city.name);
@@ -186,6 +196,23 @@
             );
           }
         }
+      });
+    }
+
+    function getUVI() {
+      console.log(lat, long);
+      let UVIQueryURL =
+        "http://api.openweathermap.org/data/2.5/onecall?lat=" +
+        lat +
+        "&lon=" +
+        long +
+        "&appid=fb810e62391ece993a9e59026583a3b3";
+      console.log(UVIQueryURL);
+      $.ajax({
+        URL: UVIQueryURL,
+        method: "GET",
+      }).then(function (response) {
+        console.log(response, "UVI API");
       });
     }
     //creating an onclick event for the search button
